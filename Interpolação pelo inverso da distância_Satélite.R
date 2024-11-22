@@ -3,7 +3,7 @@ library(dplyr)
 
 josi_dados30_sat_final #estimativas do satélite
 
-#A seguir são listadas as vizinhaças de cada estação a ser interpolada.
+#A seguir são listadas as vizinhanças de cada estação a ser interpolada.
 #Usou-se o software Qgis para determinar a vizinhança.
 #A vizinhança foi definida para um raio de busca de 20 km
 
