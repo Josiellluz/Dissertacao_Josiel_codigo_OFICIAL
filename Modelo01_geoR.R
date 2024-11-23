@@ -1,15 +1,17 @@
 
 library(geoR)
 
+library(dplyr)
+
 dados.final.44 #Contagens das estações pluviométricas.
 
 dados <- dados.final.44
 
 #Retirando a estação que queremos interpolar e selecionando o ano.
 
-#Para exemplificar vamos interpolar a primeira estação para no ano de 2021.
+#Para exemplificar vamos interpolar a primeira estação para no ano de 2001.
 
-dados <- dados[1:44,] %>% slice(-c(1))
+dados <- dados[441:484,] %>% slice(-c(1))
 
 dados
 
