@@ -1,19 +1,19 @@
 
+
 library(geoR)
 
-dados.final.44 #Contagens das estações pluviométricas.
+library(dplyr)
+
+#Carregando os dados.
 
 dados <- dados.final.44
 
-#Retirando a estação que queremos interpolar e selecionando o ano.
+#Retirando a estação a ser interpolada.
+#Para exemplificar, iremos interpolar na localização da estação 1 no ano de 2001.
 
-#Para exemplificar vamos interpolar a primeira estação para no ano de 2021.
+dados <- dados[441:484,] %>% slice(-c(1))
 
-dados <- dados[1:44,] %>% slice(-c(1))
-
-dados
-
-#Organizando os dados num data frame com as coordenadas, altitude e contagens.
+#Organizando os dados num data frame.
 
 coord01 <- c(dados[1:43,5],dados[1:43,4])
 coord01
@@ -27,7 +27,7 @@ lista01 <- data.frame(
 
 lista01
 
-#Transformando o data frame no objeto geodata.
+#Transformando o data frame num objeto geodata.
 
 dados <- as.geodata(obj=lista01, covar.col = c(1,2,4))
 
@@ -35,12 +35,11 @@ dados
 
 #Montando o modelo empírico do variograma
 
-ca20.v <- variog(dados, uvec=seq(0,4,by=0.2), option=c("bin"), pairs.min = 10, bin.cloud=T)
+ca20.v <- variog(dados, trend = "2nd", uvec=seq(0,4,by=0.2), option=c("bin"), pairs.min = 10, bin.cloud=T)
 
 plot(ca20.v)
 
-
-#Podemos definir os parâmetros iniciais interativamente por meio dos comandos a seguir.
+#################
 
 #dev.new()
 
@@ -48,15 +47,18 @@ plot(ca20.v)
 
 #Ajustando um modelo de variograma paramétrico
 
-josi_fit <- variofit(ca20.v, ini.cov.pars = c(29.7,1.33), nugget=11.5)
+
+josi_fit <- variofit(ca20.v, ini.cov.pars = c(9.7,1.33), nugget=3.88)
+
+josi_fit
 
 #Ajustanto o modelo
 
-precip02 <- likfit(dados, ini=josi_fit, fix.kappa=F, fix.nugget=T, fix.lambda=F, fix.psiA=F, fix.psiR=F)
+precip02 <- likfit(dados, trend = "2nd",ini=josi_fit, fix.kappa=F, fix.nugget=T, fix.lambda=F, fix.psiA=F, fix.psiR=F)
 
 summary(precip02)
 
-#Definindo as coordenadas do local aonde será interpolado.
+#Definindo as coordenadas do ponto a ser interpolado.
 
 #est01
 
@@ -346,17 +348,10 @@ locp
 #locp <- as.matrix(locp)
 #locp
 
-#Fazendo a interpolação.
+#Interpolando para os locais não amostrados
 
-KC <- krige.control(type = "SK", obj.mod = precip02)
+KC <- krige.control(type = "SK", obj.mod = precip02,  trend.d = "2nd", trend.l = "2nd")
 
-OC <- output.control(n.pred = 100, simul = TRUE)
-
-set.seed(2419)
-
-krige <-krige.conv(geodata=dados, krige=KC, locations = locp, out=OC)
-
-krige
+krige <-krige.conv(geodata=dados, krige=KC, locations = locp)
 
 krige$predict
-
