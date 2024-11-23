@@ -1,3 +1,3 @@
-# Dissertacao_Josiel_codigo_OFICIAL
+#Código da Dissertação - Josiel Luz
 Repositório direcionado a descrição dos códigos desenvolvidos na dissertação de Josiel Luz.
 Atualizando...
